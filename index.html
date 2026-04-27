@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -143,6 +144,12 @@
       border: 1px solid var(--primary);
     }
 
+    .btn-soft {
+      background: var(--surface-2);
+      color: var(--text);
+      border: 1px solid var(--line);
+    }
+
     .hero-grid {
       display: grid;
       grid-template-columns: 1.1fr 1fr;
@@ -170,12 +177,12 @@
       margin: 0 0 1rem;
     }
 
-    .hero-text, .section-heading p, .menu-card p, .play-banner p, .status-text, .result-text, .quiz-helper {
+    .hero-text, .section-heading p, .menu-card p, .play-banner p, .status-text, .result-text, .quiz-helper, .order-empty {
       color: var(--text-soft);
       line-height: 1.75;
     }
 
-    .hero-actions, .card-actions, .quiz-actions {
+    .hero-actions, .card-actions, .quiz-actions, .tip-options {
       display: flex;
       gap: 1rem;
       flex-wrap: wrap;
@@ -285,7 +292,7 @@
 
     .quick-order-wrap {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: 1.1fr 0.9fr;
       gap: 1.25rem;
     }
 
@@ -309,6 +316,64 @@
     textarea {
       min-height: 100px;
       resize: vertical;
+    }
+
+    .order-list {
+      display: grid;
+      gap: 0.85rem;
+      margin: 1rem 0 1.1rem;
+    }
+
+    .order-item {
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      gap: 0.8rem;
+      align-items: center;
+      padding: 0.9rem 1rem;
+      border-radius: 16px;
+      background: var(--surface-2);
+      border: 1px solid var(--line);
+    }
+
+    .order-item h4 {
+      margin: 0 0 0.2rem;
+      font-size: 1rem;
+    }
+
+    .order-item p {
+      margin: 0;
+      color: var(--text-soft);
+      font-size: 0.9rem;
+    }
+
+    .order-total {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 1rem;
+      border-top: 1px solid var(--line);
+      margin-top: 0.5rem;
+      font-weight: 800;
+    }
+
+    .tip-options {
+      gap: 0.65rem;
+    }
+
+    .tip-btn {
+      min-height: 42px;
+      padding: 0.65rem 0.9rem;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      color: var(--text);
+      font-weight: 700;
+    }
+
+    .tip-btn.active {
+      background: rgba(197, 139, 90, 0.12);
+      border-color: var(--accent);
+      color: var(--primary);
     }
 
     .modal-overlay {
@@ -510,21 +575,24 @@
       .play-banner p,
       .status-text,
       .result-text,
-      .quiz-helper {
+      .quiz-helper,
+      .order-empty {
         font-size: 0.96rem;
         line-height: 1.65;
       }
 
       .hero-actions,
       .card-actions,
-      .quiz-actions {
+      .quiz-actions,
+      .tip-options {
         flex-direction: column;
         align-items: stretch;
       }
 
       .hero-actions .btn,
       .card-actions .btn,
-      .quiz-actions .btn {
+      .quiz-actions .btn,
+      .tip-btn {
         width: 100%;
         justify-content: center;
       }
@@ -574,6 +642,10 @@
         top: 0.75rem;
         right: 0.75rem;
       }
+
+      .order-item {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
@@ -605,7 +677,7 @@
           <p class="eyebrow">Premium Café Experience</p>
           <h1>Brewed for every mood.</h1>
           <p class="hero-text">
-            Browse the menu, play with the drink matcher, and send orders directly to the café cashier system.
+            Browse the menu, play with the drink matcher, build your order, and send it directly to the café cashier system.
           </p>
           <div class="hero-actions">
             <a href="#menu" class="btn btn-primary">View Menu</a>
@@ -626,7 +698,7 @@
         <div class="section-heading">
           <p class="eyebrow">Menu</p>
           <h2>Customer favorites</h2>
-          <p>Send drinks directly to cashier. If opened from a QR code, the table number is attached automatically.</p>
+          <p>Add items to your order. If opened from a QR code, the table number is attached automatically.</p>
         </div>
         <div class="menu-grid" id="menuGrid"></div>
       </div>
@@ -648,15 +720,39 @@
     <section class="section" id="order">
       <div class="container quick-order-wrap">
         <div class="quick-order-card">
-          <p class="eyebrow">Send to Cashier</p>
-          <h2>Quick order</h2>
+          <h2>Order</h2>
+          <div id="orderList" class="order-list"></div>
+          <p id="orderEmpty" class="order-empty">No items yet. Add drinks from the menu above.</p>
+
+          <div class="order-total">
+            <span>Total</span>
+            <strong id="orderTotal">$0.00</strong>
+          </div>
+
           <form class="quick-order-form" id="cashierForm">
             <input id="customerName" type="text" placeholder="Customer name" />
-            <select id="drinkSelect">
-              <option value="">Choose a drink</option>
-            </select>
-            <input id="pickupSpot" type="text" placeholder="Optional pickup detail or short note" />
+
+            <div>
+              <label for="paymentMethod"><strong>Payment Method</strong></label>
+              <select id="paymentMethod">
+                <option value="">Choose payment method</option>
+                <option value="Cash">Cash</option>
+                <option value="Visa">Visa</option>
+              </select>
+            </div>
+
+            <div>
+              <label><strong>Tip</strong></label>
+              <div class="tip-options">
+                <button type="button" class="tip-btn active" data-tip="0">No Tip</button>
+                <button type="button" class="tip-btn" data-tip="10">10%</button>
+                <button type="button" class="tip-btn" data-tip="15">15%</button>
+                <button type="button" class="tip-btn" data-tip="20">20%</button>
+              </div>
+            </div>
+
             <textarea id="orderNote" placeholder="Customization note"></textarea>
+
             <button class="btn btn-primary" id="sendOrderBtn" type="submit">Send to Cashier</button>
             <p class="status-text" id="orderStatus"></p>
           </form>
@@ -707,7 +803,7 @@
           <p class="result-text" id="resultReason"></p>
           <div class="quiz-actions">
             <button class="btn btn-secondary" id="retryBtn">Try Again</button>
-            <button class="btn btn-secondary" id="sendRecommendedBtn">Send to Cashier</button>
+            <button class="btn btn-secondary" id="addRecommendedBtn">Add to Order</button>
             <button class="btn btn-primary" id="viewMenuBtn">View on Menu</button>
           </div>
         </div>
@@ -725,7 +821,8 @@
         id: "drink-espresso",
         name: "Espresso",
         description: "Bold and concentrated shot of coffee.",
-        price: "\$3.00",
+        price: 3.00,
+        displayPrice: "$3.00",
         image: "https://images.unsplash.com/photo-1510591509098-f4fdc6d0ff04?auto=format&fit=crop&w=900&q=80",
         tags: ["Strong", "Classic"],
         temperature: "Hot",
@@ -738,7 +835,8 @@
         id: "drink-americano",
         name: "Americano",
         description: "Espresso with hot water, smooth and rich.",
-        price: "\$3.50",
+        price: 3.50,
+        displayPrice: "$3.50",
         image: "https://images.unsplash.com/photo-1497935586351-b67a49e012bf?auto=format&fit=crop&w=900&q=80",
         tags: ["Popular", "Classic"],
         temperature: "Hot",
@@ -751,7 +849,8 @@
         id: "drink-cappuccino",
         name: "Cappuccino",
         description: "Espresso with steamed milk and foam.",
-        price: "\$4.50",
+        price: 4.50,
+        displayPrice: "$4.50",
         image: "https://images.unsplash.com/photo-1534778101976-62847782c213?auto=format&fit=crop&w=900&q=80",
         tags: ["Creamy"],
         temperature: "Hot",
@@ -764,7 +863,8 @@
         id: "drink-latte",
         name: "Latte",
         description: "Smooth espresso with creamy steamed milk.",
-        price: "\$4.80",
+        price: 4.80,
+        displayPrice: "$4.80",
         image: "https://images.unsplash.com/photo-1561047029-3000c68339ca?auto=format&fit=crop&w=900&q=80",
         tags: ["Popular", "Creamy"],
         temperature: "Hot",
@@ -777,7 +877,8 @@
         id: "drink-mocha",
         name: "Mocha",
         description: "Chocolate-infused espresso with milk.",
-        price: "\$5.20",
+        price: 5.20,
+        displayPrice: "$5.20",
         image: "https://images.unsplash.com/photo-1541167760496-1628856ab772?auto=format&fit=crop&w=900&q=80",
         tags: ["Sweet", "Comforting"],
         temperature: "Hot",
@@ -790,7 +891,8 @@
         id: "drink-matcha-latte",
         name: "Matcha Latte",
         description: "Earthy green tea with creamy milk.",
-        price: "\$5.30",
+        price: 5.30,
+        displayPrice: "$5.30",
         image: "https://images.unsplash.com/photo-1515823064-d6e0c04616a7?auto=format&fit=crop&w=900&q=80",
         tags: ["New", "Vegan Available"],
         temperature: "Hot",
@@ -803,7 +905,8 @@
         id: "drink-chai-latte",
         name: "Chai Latte",
         description: "Spiced tea with steamed milk.",
-        price: "\$4.90",
+        price: 4.90,
+        displayPrice: "$4.90",
         image: "https://images.unsplash.com/photo-1576092768241-dec231879fc3?auto=format&fit=crop&w=900&q=80",
         tags: ["Adventurous", "Creamy"],
         temperature: "Hot",
@@ -816,7 +919,8 @@
         id: "drink-iced-coffee",
         name: "Iced Coffee",
         description: "Chilled brewed coffee over ice.",
-        price: "\$4.20",
+        price: 4.20,
+        displayPrice: "$4.20",
         image: "https://images.unsplash.com/photo-1517701604599-bb29b565090c?auto=format&fit=crop&w=900&q=80",
         tags: ["Energizing"],
         temperature: "Cold",
@@ -829,7 +933,8 @@
         id: "drink-cold-brew",
         name: "Cold Brew",
         description: "Slow-steeped bold cold coffee.",
-        price: "\$4.80",
+        price: 4.80,
+        displayPrice: "$4.80",
         image: "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=900&q=80",
         tags: ["Strong", "Popular"],
         temperature: "Cold",
@@ -842,7 +947,8 @@
         id: "drink-iced-vanilla-latte",
         name: "Iced Vanilla Latte",
         description: "Creamy iced espresso with vanilla.",
-        price: "\$5.40",
+        price: 5.40,
+        displayPrice: "$5.40",
         image: "https://images.unsplash.com/photo-1517701604599-bb29b565090c?auto=format&fit=crop&w=900&q=80",
         tags: ["Popular", "Sweet"],
         temperature: "Cold",
@@ -855,7 +961,8 @@
         id: "drink-lemon-iced-tea",
         name: "Lemon Iced Tea",
         description: "Light and refreshing citrus tea.",
-        price: "\$4.30",
+        price: 4.30,
+        displayPrice: "$4.30",
         image: "https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?auto=format&fit=crop&w=900&q=80",
         tags: ["Refreshing", "Seasonal"],
         temperature: "Cold",
@@ -868,7 +975,8 @@
         id: "drink-herbal-tea",
         name: "Herbal Tea",
         description: "Caffeine-free calming blend.",
-        price: "\$3.80",
+        price: 3.80,
+        displayPrice: "$3.80",
         image: "https://images.unsplash.com/photo-1594631661960-7f6dbaa0e0c6?auto=format&fit=crop&w=900&q=80",
         tags: ["Decaf Option", "Refreshing"],
         temperature: "Hot",
@@ -881,7 +989,8 @@
         id: "drink-hot-chocolate",
         name: "Hot Chocolate",
         description: "Rich cocoa drink with velvety warmth.",
-        price: "\$4.70",
+        price: 4.70,
+        displayPrice: "$4.70",
         image: "https://images.unsplash.com/photo-1517578239113-b03992dcdd25?auto=format&fit=crop&w=900&q=80",
         tags: ["Sweet", "Comforting"],
         temperature: "Hot",
@@ -894,7 +1003,8 @@
         id: "drink-caramel-frappe",
         name: "Caramel Frappé",
         description: "Blended icy caramel coffee drink.",
-        price: "\$5.90",
+        price: 5.90,
+        displayPrice: "$5.90",
         image: "https://images.unsplash.com/photo-1461023058943-07fcbe16d735?auto=format&fit=crop&w=900&q=80",
         tags: ["Seasonal", "Sweet"],
         temperature: "Cold",
@@ -914,14 +1024,16 @@
     ];
 
     const menuGrid = document.getElementById("menuGrid");
-    const drinkSelect = document.getElementById("drinkSelect");
     const toast = document.getElementById("toast");
     const orderStatus = document.getElementById("orderStatus");
     const customerName = document.getElementById("customerName");
-    const pickupSpot = document.getElementById("pickupSpot");
     const orderNote = document.getElementById("orderNote");
+    const paymentMethod = document.getElementById("paymentMethod");
     const tableBadge = document.getElementById("tableBadge");
     const themeToggle = document.getElementById("themeToggle");
+    const orderList = document.getElementById("orderList");
+    const orderEmpty = document.getElementById("orderEmpty");
+    const orderTotal = document.getElementById("orderTotal");
 
     const quizModal = document.getElementById("quizModal");
     const quizIntro = document.getElementById("quizIntro");
@@ -944,6 +1056,8 @@
     let currentQuestionIndex = -1;
     let answers = {};
     let lastRecommendation = null;
+    let orderItems = [];
+    let selectedTip = 0;
 
     function showToast(message) {
       toast.textContent = message;
@@ -972,6 +1086,10 @@
       themeToggle.textContent = dark ? "☀️ Light" : "🌙 Dark";
     });
 
+    function formatMoney(value) {
+      return `$${value.toFixed(2)}`;
+    }
+
     function renderMenu() {
       drinks.forEach(drink => {
         const article = document.createElement("article");
@@ -984,29 +1102,124 @@
             <div class="menu-content">
               <div class="menu-top">
                 <h4>${drink.name}</h4>
-                <span class="price">${drink.price}</span>
+                <span class="price">${drink.displayPrice}</span>
               </div>
               <p>${drink.description}</p>
               <div class="tags">
                 ${drink.tags.map(tag => `<span>${tag}</span>`).join("")}
               </div>
               <div class="card-actions">
-                <button class="btn btn-secondary quick-send-btn" data-drink="${drink.name}">Send to Cashier</button>
+                <button class="btn btn-secondary add-order-btn" data-drink="${drink.name}">Add to Order</button>
               </div>
             </div>
           </div>
         `;
         menuGrid.appendChild(article);
-
-        const option = document.createElement("option");
-        option.value = drink.name;
-        option.textContent = drink.name;
-        drinkSelect.appendChild(option);
       });
 
-      document.querySelectorAll(".quick-send-btn").forEach(btn => {
-        btn.addEventListener("click", () => handleQuickSend(btn.dataset.drink, "menu-card"));
+      document.querySelectorAll(".add-order-btn").forEach(btn => {
+        btn.addEventListener("click", () => addToOrder(btn.dataset.drink));
       });
+    }
+
+    function addToOrder(drinkName) {
+      const drink = drinks.find(d => d.name === drinkName);
+      if (!drink) return;
+
+      const existing = orderItems.find(item => item.name === drinkName);
+
+      if (existing) {
+        existing.quantity += 1;
+      } else {
+        orderItems.push({
+          name: drink.name,
+          price: drink.price,
+          quantity: 1
+        });
+      }
+
+      renderOrder();
+      showToast(`${drink.name} added to order`);
+    }
+
+    function removeFromOrder(drinkName) {
+      orderItems = orderItems.filter(item => item.name !== drinkName);
+      renderOrder();
+    }
+
+    function changeQuantity(drinkName, delta) {
+      const item = orderItems.find(i => i.name === drinkName);
+      if (!item) return;
+
+      item.quantity += delta;
+
+      if (item.quantity <= 0) {
+        removeFromOrder(drinkName);
+        return;
+      }
+
+      renderOrder();
+    }
+
+    function calculateSubtotal() {
+      return orderItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    }
+
+    function calculateTipAmount() {
+      return calculateSubtotal() * (selectedTip / 100);
+    }
+
+    function calculateTotal() {
+      return calculateSubtotal() + calculateTipAmount();
+    }
+
+    function renderOrder() {
+      orderList.innerHTML = "";
+
+      if (orderItems.length === 0) {
+        orderEmpty.style.display = "block";
+      } else {
+        orderEmpty.style.display = "none";
+      }
+
+      orderItems.forEach(item => {
+        const row = document.createElement("div");
+        row.className = "order-item";
+        row.innerHTML = `
+          <div>
+            <h4>${item.name}</h4>
+            <p>${formatMoney(item.price)} each</p>
+          </div>
+          <div class="hero-actions" style="gap:0.5rem;">
+            <button type="button" class="btn btn-soft qty-btn" data-name="${item.name}" data-delta="-1">−</button>
+            <span><strong>${item.quantity}</strong></span>
+            <button type="button" class="btn btn-soft qty-btn" data-name="${item.name}" data-delta="1">+</button>
+          </div>
+          <div class="hero-actions" style="gap:0.5rem; justify-content:flex-end;">
+            <strong>${formatMoney(item.price * item.quantity)}</strong>
+            <button type="button" class="btn btn-soft remove-btn" data-name="${item.name}">Remove</button>
+          </div>
+        `;
+        orderList.appendChild(row);
+      });
+
+      orderList.querySelectorAll(".qty-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          changeQuantity(btn.dataset.name, Number(btn.dataset.delta));
+        });
+      });
+
+      orderList.querySelectorAll(".remove-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          removeFromOrder(btn.dataset.name);
+        });
+      });
+
+      const subtotal = calculateSubtotal();
+      const tipAmount = calculateTipAmount();
+      const total = subtotal + tipAmount;
+
+      orderTotal.textContent = `${formatMoney(total)}${selectedTip > 0 ? ` (incl. ${selectedTip}% tip)` : ""}`;
     }
 
     async function sendOrderToCashier(orderData) {
@@ -1034,21 +1247,54 @@
       return result.order;
     }
 
-    async function handleQuickSend(drinkName, source = "menu-card") {
+    async function sendWholeOrder() {
+      if (orderItems.length === 0) {
+        orderStatus.textContent = "Please add at least one item to your order.";
+        return;
+      }
+
+      if (!paymentMethod.value) {
+        orderStatus.textContent = "Please choose a payment method.";
+        return;
+      }
+
       try {
+        showToast("Sending order to cashier...");
+
+        const itemSummary = orderItems
+          .map(item => `${item.quantity}x ${item.name}`)
+          .join(", ");
+
+        const subtotal = calculateSubtotal();
+        const tipAmount = calculateTipAmount();
+        const total = calculateTotal();
+
         const payload = {
           customerName: customerName.value.trim() || "Guest",
-          drink: drinkName,
+          drink: orderItems[0].name,
           tableId: activeTableId,
-          note: orderNote.value.trim() || pickupSpot.value.trim() || "",
-          source,
-          recommendedByQuiz: source === "quiz-recommendation"
+          note: [
+            `Order: ${itemSummary}`,
+            `Payment: ${paymentMethod.value}`,
+            `Tip: ${selectedTip}% (${formatMoney(tipAmount)})`,
+            `Total: ${formatMoney(total)}`,
+            orderNote.value.trim()
+          ].filter(Boolean).join(" | "),
+          source: "order-cart",
+          recommendedByQuiz: false
         };
 
-        showToast("Sending order to cashier...");
         const result = await sendOrderToCashier(payload);
-        showToast(`Sent: ${drinkName}`);
+
+        showToast("Order sent to cashier");
         orderStatus.textContent = `Sent successfully • Ticket: ${result.cashierTicketId} • Table: ${result.tableId}`;
+
+        orderItems = [];
+        selectedTip = 0;
+        document.querySelectorAll(".tip-btn").forEach(btn => btn.classList.remove("active"));
+        document.querySelector('.tip-btn[data-tip="0"]').classList.add("active");
+        renderOrder();
+        document.getElementById("cashierForm").reset();
       } catch (error) {
         console.error("Order send failed:", error);
         orderStatus.textContent = `Could not send order: ${error.message}`;
@@ -1058,12 +1304,16 @@
 
     document.getElementById("cashierForm").addEventListener("submit", async (e) => {
       e.preventDefault();
-      const selectedDrink = drinkSelect.value;
-      if (!selectedDrink) {
-        orderStatus.textContent = "Please choose a drink.";
-        return;
-      }
-      await handleQuickSend(selectedDrink, "cashier-form");
+      await sendWholeOrder();
+    });
+
+    document.querySelectorAll(".tip-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".tip-btn").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        selectedTip = Number(btn.dataset.tip);
+        renderOrder();
+      });
     });
 
     function openQuiz() {
@@ -1165,7 +1415,7 @@
       resultImage.src = recommendation.image;
       resultName.textContent = recommendation.name;
       resultDescription.textContent = recommendation.description;
-      resultPrice.textContent = recommendation.price;
+      resultPrice.textContent = recommendation.displayPrice;
       resultReason.textContent =
         `Because you wanted something ${answers.temperature.toLowerCase()}, ${answers.flavor.toLowerCase()}, and matched a ${answers.mood.toLowerCase()} mood.`;
 
@@ -1188,9 +1438,11 @@
 
     document.getElementById("retryBtn").addEventListener("click", resetQuiz);
 
-    document.getElementById("sendRecommendedBtn").addEventListener("click", async () => {
+    document.getElementById("addRecommendedBtn").addEventListener("click", () => {
       if (!lastRecommendation) return;
-      await handleQuickSend(lastRecommendation.name, "quiz-recommendation");
+      addToOrder(lastRecommendation.name);
+      closeQuiz();
+      document.getElementById("order").scrollIntoView({ behavior: "smooth", block: "start" });
     });
 
     document.getElementById("viewMenuBtn").addEventListener("click", () => {
@@ -1200,6 +1452,8 @@
     });
 
     renderMenu();
+    renderOrder();
   </script>
 </body>
 </html>
+```
