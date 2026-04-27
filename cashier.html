@@ -269,6 +269,413 @@
   </div>
 
   <script>
+    const API_BASE = "https://amber-bean-api-production.up.railway.app";
+
+    const columns = {
+      new: document.getElementById("col-new"),
+      preparing: document.getElementById("col-preparing"),
+      ready: document.getElementById("col-ready"),
+      served: document.getElementById("col-served")
+    };
+
+    const totalCount = document.getElementById("totalCount");
+    const newCount = document.getElementById("newCount");
+    const preparingCount = document.getElementById("preparingCount");
+    const readyCount = document.getElementById("readyCount");
+
+    function formatTime(iso) {
+      const date = new Date(iso);
+      return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+    }
+
+    async function fetchOrders() {
+      const res = await fetch(`${API_BASE}/api/orders`);
+      const data = await res.json();
+      return data.orders || [];
+    }
+
+    async function updateStatus(id, status) {
+      await fetch(`${API_BASE}/api/orders/${id}/status`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status })
+      });
+      loadBoard();
+    }
+
+    function makeButton(label, className, onClick) {
+      const btn = document.createElement("button");
+      btn.textContent = label;
+      btn.className = className;
+      btn.onclick = onClick;
+      return btn;
+    }
+
+    function createOrderCard(order) {
+      const card = document.createElement("article");
+      card.className = "order-card";
+
+      card.innerHTML = `
+        <div class="order-top">
+          <div>
+            <h3>Order #${order.orderNumber}</h3>
+            <div class="meta"><strong>${order.customerName}</strong> • Table: ${order.tableId}</div>
+          </div>
+          <div class="small">${formatTime(order.createdAt)}</div>
+        </div>
+
+        <div class="tags">
+          <span class="tag">${order.category}</span>
+          <span class="tag">${order.cashierTicketId || "Pending Ticket"}</span>
+          <span class="tag">${order.source}</span>
+          ${order.recommendedByQuiz ? `<span class="tag">Quiz Match</span>` : ""}
+        </div>
+
+        <div class="note">${order.note ? "Note: " + order.note : "No custom note"}</div>
+      `;
+
+      const actions = document.createElement("div");
+      actions.className = "actions";
+
+      if (order.status !== "new") {
+        actions.appendChild(makeButton("New", "btn-new", () => updateStatus(order.id, "new")));
+      }
+      if (order.status !== "preparing") {
+        actions.appendChild(makeButton("Preparing", "btn-preparing", () => updateStatus(order.id, "preparing")));
+      }
+      if (order.status !== "ready") {
+        actions.appendChild(makeButton("Ready", "btn-ready", () => updateStatus(order.id, "ready")));
+      }
+      if (order.status !== "served") {
+        actions.appendChild(makeButton("Served", "btn-served", () => updateStatus(order.id, "served")));
+      }
+
+      card.appendChild(actions);
+      return card;
+    }
+
+    function renderColumn(el, orders) {
+      el.innerHTML = "";
+      if (!orders.length) {
+        el.innerHTML = `<div class="empty">No orders here yet</div>`;
+        return;
+      }
+      orders.forEach(order => el.appendChild(createOrderCard(order)));
+    }
+
+    async function loadBoard() {
+      const orders = await fetchOrders();
+
+      const sortedOrders = [...orders].sort((a, b) => {
+        return new Date(a.createdAt) - new Date(b.createdAt);
+      });
+
+      const numberedOrders = sortedOrders.map((order, index) => ({
+        ...order,
+        orderNumber: index + 1
+      }));
+
+      const grouped = {
+        new: numberedOrders.filter(o => o.status === "new"),
+        preparing: numberedOrders.filter(o => o.status === "preparing"),
+        ready: numberedOrders.filter(o => o.status === "ready"),
+        served: numberedOrders.filter(o => o.status === "served")
+      };
+
+      renderColumn(columns.new, grouped.new);
+      renderColumn(columns.preparing, grouped.preparing);
+      renderColumn(columns.ready, grouped.ready);
+      renderColumn(columns.served, grouped.served);
+
+      totalCount.textContent = numberedOrders.length;
+      newCount.textContent = grouped.new.length;
+      preparingCount.textContent = grouped.preparing.length;
+      readyCount.textContent = grouped.ready.length;
+
+      document.getElementById("count-new").textContent = grouped.new.length;
+      document.getElementById("count-preparing").textContent = grouped.preparing.length;
+      document.getElementById("count-ready").textContent = grouped.ready.length;
+      document.getElementById("count-served").textContent = grouped.served.length;
+
+      document.getElementById("lastUpdated").textContent =
+        "Updated " + new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+    }
+
+    loadBoard();
+    setInterval(loadBoard, 3000);
+  </script>
+</body>
+</html><!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Amber & Bean | Cashier Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f7f1e8;
+      --surface: #fffaf4;
+      --surface-2: #f2e7d8;
+      --text: #3c2a21;
+      --text-soft: #6f5a4d;
+      --line: #e8dac8;
+      --shadow: 0 16px 35px rgba(90, 58, 39, 0.12);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: "Inter", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    .container {
+      width: min(100% - 2rem, 1280px);
+      margin: 0 auto;
+      padding: 2rem 0 3rem;
+    }
+
+    h1, h2, h3 {
+      font-family: "Playfair Display", serif;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: 2rem;
+    }
+
+    .sub {
+      color: var(--text-soft);
+    }
+
+    .pill {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 0.7rem 1rem;
+      font-weight: 700;
+      box-shadow: var(--shadow);
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 1rem;
+      box-shadow: var(--shadow);
+    }
+
+    .stat-card h3 {
+      margin: 0 0 0.4rem;
+      font-size: 0.95rem;
+      color: var(--text-soft);
+    }
+
+    .stat-card strong {
+      font-size: 1.7rem;
+    }
+
+    .board {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+    }
+
+    .column {
+      background: rgba(255,255,255,0.35);
+      border-radius: 22px;
+      padding: 0.8rem;
+    }
+
+    .column-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.9rem;
+    }
+
+    .count {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 0.35rem 0.65rem;
+      font-size: 0.8rem;
+      font-weight: 700;
+    }
+
+    .orders {
+      display: grid;
+      gap: 0.9rem;
+      min-height: 120px;
+    }
+
+    .order-card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 1rem;
+      box-shadow: var(--shadow);
+    }
+
+    .order-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 0.8rem;
+      align-items: start;
+    }
+
+    .order-top h3 {
+      margin: 0 0 0.25rem;
+      font-size: 1.05rem;
+    }
+
+    .meta, .note, .small {
+      color: var(--text-soft);
+      font-size: 0.92rem;
+      line-height: 1.6;
+    }
+
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.45rem;
+      margin: 0.7rem 0;
+    }
+
+    .tag {
+      background: var(--surface-2);
+      border-radius: 999px;
+      padding: 0.35rem 0.55rem;
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+
+    .actions {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin-top: 0.8rem;
+    }
+
+    button {
+      border: none;
+      border-radius: 999px;
+      padding: 0.65rem 0.9rem;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .btn-new { background: #ede3d7; color: #3c2a21; }
+    .btn-preparing { background: #f5e1b8; color: #6f472c; }
+    .btn-ready { background: #d9ead3; color: #2d5b34; }
+    .btn-served { background: #d7e5f2; color: #31506b; }
+
+    .empty {
+      border: 1px dashed var(--line);
+      border-radius: 16px;
+      padding: 1rem;
+      color: var(--text-soft);
+      text-align: center;
+      background: rgba(255,255,255,0.35);
+    }
+
+    @media (max-width: 1100px) {
+      .stats,
+      .board {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 700px) {
+      .stats,
+      .board {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="topbar">
+      <div>
+        <h1>Cashier Dashboard</h1>
+        <div class="sub">Amber & Bean live order board</div>
+      </div>
+      <div class="pill" id="lastUpdated">Updating...</div>
+    </div>
+
+    <section class="stats">
+      <div class="stat-card">
+        <h3>Total Orders</h3>
+        <strong id="totalCount">0</strong>
+      </div>
+      <div class="stat-card">
+        <h3>New</h3>
+        <strong id="newCount">0</strong>
+      </div>
+      <div class="stat-card">
+        <h3>Preparing</h3>
+        <strong id="preparingCount">0</strong>
+      </div>
+      <div class="stat-card">
+        <h3>Ready</h3>
+        <strong id="readyCount">0</strong>
+      </div>
+    </section>
+
+    <section class="board">
+      <div class="column">
+        <div class="column-header">
+          <h2>New</h2>
+          <span class="count" id="count-new">0</span>
+        </div>
+        <div class="orders" id="col-new"></div>
+      </div>
+
+      <div class="column">
+        <div class="column-header">
+          <h2>Preparing</h2>
+          <span class="count" id="count-preparing">0</span>
+        </div>
+        <div class="orders" id="col-preparing"></div>
+      </div>
+
+      <div class="column">
+        <div class="column-header">
+          <h2>Ready</h2>
+          <span class="count" id="count-ready">0</span>
+        </div>
+        <div class="orders" id="col-ready"></div>
+      </div>
+
+      <div class="column">
+        <div class="column-header">
+          <h2>Served</h2>
+          <span class="count" id="count-served">0</span>
+        </div>
+        <div class="orders" id="col-served"></div>
+      </div>
+    </section>
+  </div>
+
+  <script>
 const API_BASE = "https://amber-bean-api-production.up.railway.app";
     const columns = {
       new: document.getElementById("col-new"),
