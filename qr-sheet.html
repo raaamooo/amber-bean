@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Amber & Bean | Table QR Print Sheet</title>
+  <style>
+    :root {
+      --bg: #f7f1e8;
+      --card: #fffaf4;
+      --text: #3c2a21;
+      --soft: #6f5a4d;
+      --line: #e8dac8;
+      --primary: #8b5e3c;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      padding: 24px;
+    }
+
+    .controls {
+      max-width: 1100px;
+      margin: 0 auto 24px;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 20px;
+    }
+
+    .controls h1 {
+      margin-top: 0;
+    }
+
+    .controls p {
+      color: var(--soft);
+    }
+
+    .row {
+      display: grid;
+      gap: 12px;
+      grid-template-columns: 1fr 180px 180px 180px;
+      margin-top: 16px;
+    }
+
+    input, button {
+      min-height: 44px;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      padding: 10px 12px;
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+      background: var(--primary);
+      color: white;
+      border: none;
+      font-weight: 700;
+    }
+
+    .sheet {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    .qr-card {
+      background: white;
+      border: 1px solid #ddd;
+      border-radius: 16px;
+      padding: 18px;
+      text-align: center;
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+
+    .brand {
+      font-size: 14px;
+      color: var(--soft);
+      margin-bottom: 6px;
+    }
+
+    .table-name {
+      font-size: 28px;
+      font-weight: 800;
+      margin: 6px 0 10px;
+      color: var(--primary);
+    }
+
+    .scan-text {
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
+    .qr-card img {
+      width: 180px;
+      height: 180px;
+      object-fit: contain;
+      margin: 0 auto 12px;
+      display: block;
+    }
+
+    .url {
+      font-size: 11px;
+      color: var(--soft);
+      word-break: break-all;
+      line-height: 1.4;
+    }
+
+    .footer-note {
+      font-size: 12px;
+      color: var(--soft);
+      margin-top: 10px;
+    }
+
+    @media print {
+      body {
+        background: white;
+        padding: 0;
+      }
+
+      .controls {
+        display: none;
+      }
+
+      .sheet {
+        max-width: 100%;
+        gap: 10px;
+      }
+
+      .qr-card {
+        border: 1px solid #bbb;
+        border-radius: 10px;
+      }
+    }
+
+    @media (max-width: 900px) {
+      .row {
+        grid-template-columns: 1fr;
+      }
+
+      .sheet {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .sheet {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="controls">
+    <h1>Amber & Bean QR Print Sheet</h1>
+    <p>Generate table QR codes for GitHub Pages dine-in ordering.</p>
+
+    <div class="row">
+      <input id="baseUrl" type="text" value="https://YOUR_USERNAME.github.io/amber-bean-frontend" />
+      <input id="prefix" type="text" value="T" />
+      <input id="startNum" type="number" value="1" min="1" />
+      <input id="endNum" type="number" value="12" min="1" />
+    </div>
+
+    <div class="row">
+      <input id="customTables" type="text" placeholder="Optional custom tables, e.g. PATIO1,PATIO2,BAR1" />
+      <button id="generateBtn">Generate QR Sheet</button>
+      <button id="printBtn" type="button">Print</button>
+      <button id="downloadListBtn" type="button">Download URL List</button>
+    </div>
+  </div>
+
+  <div class="sheet" id="sheet"></div>
+
+  <script>
+    const baseUrlInput = document.getElementById("baseUrl");
+    const prefixInput = document.getElementById("prefix");
+    const startNumInput = document.getElementById("startNum");
+    const endNumInput = document.getElementById("endNum");
+    const customTablesInput = document.getElementById("customTables");
+    const generateBtn = document.getElementById("generateBtn");
+    const printBtn = document.getElementById("printBtn");
+    const downloadListBtn = document.getElementById("downloadListBtn");
+    const sheet = document.getElementById("sheet");
+
+    let generatedUrls = [];
+
+    function normalizeBaseUrl(url) {
+      if (!url) return "";
+      return url.endsWith("/") ? url.slice(0, -1) : url;
+    }
+
+    function buildTableList() {
+      const prefix = prefixInput.value.trim() || "T";
+      const start = parseInt(startNumInput.value, 10) || 1;
+      const end = parseInt(endNumInput.value, 10) || 1;
+      const list = [];
+
+      for (let i = start; i <= end; i++) {
+        list.push(`${prefix}${i}`);
+      }
+
+      const custom = customTablesInput.value
+        .split(",")
+        .map(v => v.trim())
+        .filter(Boolean);
+
+      custom.forEach(item => list.push(item));
+      return list;
+    }
+
+    function qrImageUrl(targetUrl) {
+      return `https://api.qrserver.com/v1/create-qr-code/?size=260x260&data=${encodeURIComponent(targetUrl)}`;
+    }
+
+    function createCard(tableId, targetUrl) {
+      const card = document.createElement("div");
+      card.className = "qr-card";
+      card.innerHTML = `
+        <div class="brand">Amber & Bean</div>
+        <div class="table-name">${tableId}</div>
+        <div class="scan-text">Scan to view menu & order</div>
+        <img src="${qrImageUrl(targetUrl)}" alt="QR code for ${tableId}" />
+        <div class="url">${targetUrl}</div>
+        <div class="footer-note">Brewed for every mood</div>
+      `;
+      return card;
+    }
+
+    function generateSheet() {
+      const baseUrl = normalizeBaseUrl(baseUrlInput.value.trim());
+      const tables = buildTableList();
+
+      sheet.innerHTML = "";
+      generatedUrls = [];
+
+      tables.forEach(tableId => {
+        const targetUrl = `${baseUrl}/?table=${encodeURIComponent(tableId)}`;
+        generatedUrls.push({ tableId, url: targetUrl });
+        sheet.appendChild(createCard(tableId, targetUrl));
+      });
+    }
+
+    function downloadUrlList() {
+      if (!generatedUrls.length) {
+        alert("Generate the QR sheet first.");
+        return;
+      }
+
+      const content = generatedUrls.map(item => `${item.tableId} -> ${item.url}`).join("\n");
+      const blob = new Blob([content], { type: "text/plain" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = "amber-bean-table-urls.txt";
+      link.click();
+      URL.revokeObjectURL(link.href);
+    }
+
+    generateBtn.addEventListener("click", generateSheet);
+    printBtn.addEventListener("click", () => window.print());
+    downloadListBtn.addEventListener("click", downloadUrlList);
+
+    generateSheet();
+  </script>
+</body>
+</html>

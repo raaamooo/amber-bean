@@ -1,0 +1,1052 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Amber & Bean | Brewed for every mood</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f7f1e8;
+      --bg-soft: #fbf7f2;
+      --surface: #fffaf4;
+      --surface-2: #f2e7d8;
+      --text: #3c2a21;
+      --text-soft: #6f5a4d;
+      --line: #e8dac8;
+      --primary: #8b5e3c;
+      --primary-dark: #6f472c;
+      --accent: #c58b5a;
+      --shadow: 0 18px 40px rgba(90, 58, 39, 0.12);
+      --radius-xl: 28px;
+      --radius-lg: 20px;
+    }
+
+    body.dark-theme {
+      --bg: #181411;
+      --bg-soft: #201a16;
+      --surface: #241d19;
+      --surface-2: #312721;
+      --text: #f4e7d8;
+      --text-soft: #c9b5a1;
+      --line: #3f3128;
+      --primary: #d39a68;
+      --primary-dark: #b88053;
+      --accent: #e7b07f;
+      --shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      font-family: "Inter", sans-serif;
+      background: linear-gradient(180deg, var(--bg-soft) 0%, var(--bg) 100%);
+      color: var(--text);
+    }
+
+    a { color: inherit; text-decoration: none; }
+    button { font: inherit; border: none; cursor: pointer; }
+    img { max-width: 100%; display: block; }
+
+    .container {
+      width: min(100% - 2rem, 1180px);
+      margin: 0 auto;
+    }
+
+    .section { padding: 5rem 0; }
+
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: rgba(251,247,242,0.82);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(139,94,60,0.08);
+    }
+
+    body.dark-theme .site-header {
+      background: rgba(24,20,17,0.82);
+    }
+
+    .navbar {
+      min-height: 78px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+
+    .brand-mark {
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: var(--surface-2);
+      box-shadow: var(--shadow);
+    }
+
+    .brand-text {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .brand-text small {
+      color: var(--text-soft);
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .table-badge, .btn, .theme-toggle {
+      min-height: 44px;
+      border-radius: 999px;
+      padding: 0.8rem 1rem;
+      font-weight: 700;
+    }
+
+    .table-badge {
+      background: var(--surface-2);
+      border: 1px solid var(--line);
+      color: var(--primary);
+    }
+
+    .theme-toggle {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      color: var(--text);
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--primary);
+      border: 1px solid var(--primary);
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.1fr 1fr;
+      gap: 2rem;
+      align-items: center;
+    }
+
+    .eyebrow {
+      color: var(--accent);
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-weight: 700;
+      margin-bottom: 0.7rem;
+      display: inline-block;
+    }
+
+    h1, h2, h3, h4 {
+      font-family: "Playfair Display", serif;
+    }
+
+    h1 {
+      font-size: clamp(2.8rem, 6vw, 5rem);
+      line-height: 1;
+      margin: 0 0 1rem;
+    }
+
+    .hero-text, .section-heading p, .menu-card p, .play-banner p, .status-text, .result-text {
+      color: var(--text-soft);
+      line-height: 1.75;
+    }
+
+    .hero-actions, .card-actions, .quiz-actions {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .hero-card {
+      min-height: 420px;
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+      padding: 2rem;
+      display: flex;
+      align-items: flex-end;
+      color: white;
+      background:
+        linear-gradient(to top, rgba(20,14,10,0.6), rgba(20,14,10,0.08)),
+        url("https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=1200&q=80") center/cover no-repeat;
+      box-shadow: var(--shadow);
+    }
+
+    .section-heading {
+      max-width: 700px;
+      margin-bottom: 2rem;
+    }
+
+    .section-heading h2 {
+      margin: 0 0 0.7rem;
+      font-size: clamp(2rem, 4vw, 3rem);
+    }
+
+    .menu-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.25rem;
+    }
+
+    .menu-card, .play-banner, .quick-order-card, .modal {
+      background: rgba(255,250,244,0.94);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      border-radius: var(--radius-lg);
+    }
+
+    body.dark-theme .menu-card,
+    body.dark-theme .play-banner,
+    body.dark-theme .quick-order-card,
+    body.dark-theme .modal {
+      background: rgba(36,29,25,0.96);
+    }
+
+    .menu-card {
+      overflow: hidden;
+    }
+
+    .menu-layout {
+      display: grid;
+      grid-template-columns: 160px 1fr;
+    }
+
+    .menu-layout img {
+      width: 100%;
+      height: 100%;
+      min-height: 180px;
+      object-fit: cover;
+    }
+
+    .menu-content {
+      padding: 1rem;
+    }
+
+    .menu-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      align-items: start;
+    }
+
+    .menu-top h4 {
+      margin: 0;
+      font-size: 1.15rem;
+    }
+
+    .price {
+      color: var(--primary);
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin: 0.75rem 0 1rem;
+    }
+
+    .tags span {
+      background: var(--surface-2);
+      color: var(--text-soft);
+      border-radius: 999px;
+      padding: 0.35rem 0.65rem;
+      font-size: 0.78rem;
+      font-weight: 700;
+    }
+
+    .play-banner, .quick-order-card {
+      padding: 2rem;
+    }
+
+    .quick-order-wrap {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+    }
+
+    .quick-order-form {
+      display: grid;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 0.9rem 1rem;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      color: var(--text);
+      min-height: 48px;
+      font: inherit;
+    }
+
+    textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(43, 28, 19, 0.5);
+      display: grid;
+      place-items: center;
+      padding: 1rem;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+      z-index: 100;
+    }
+
+    .modal-overlay.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal {
+      width: min(100%, 720px);
+      padding: 1.25rem;
+      position: relative;
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: var(--surface-2);
+      color: var(--text);
+      font-size: 1.4rem;
+    }
+
+    .quiz-screen { display: none; }
+    .quiz-screen.active { display: block; }
+
+    .options-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.9rem;
+      margin: 1rem 0;
+    }
+
+    .option-btn {
+      min-height: 64px;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      color: var(--text);
+      padding: 1rem;
+      text-align: left;
+      font-weight: 700;
+    }
+
+    .option-btn.selected {
+      border-color: var(--accent);
+      background: rgba(197, 139, 90, 0.12);
+    }
+
+    .quiz-result img {
+      width: 100%;
+      max-height: 260px;
+      object-fit: cover;
+      border-radius: 16px;
+      margin-bottom: 1rem;
+    }
+
+    .toast {
+      position: fixed;
+      right: 1rem;
+      bottom: 1rem;
+      background: var(--surface);
+      color: var(--text);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      border-radius: 16px;
+      padding: 1rem 1.1rem;
+      z-index: 200;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: all 0.25s ease;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .status-text {
+      min-height: 1.4rem;
+      margin-top: 0.75rem;
+      font-weight: 600;
+    }
+
+    @media (max-width: 900px) {
+      .hero-grid,
+      .quick-order-wrap,
+      .menu-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .menu-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <nav class="navbar container">
+      <a href="#" class="brand">
+        <span class="brand-mark">☕</span>
+        <span class="brand-text">
+          <strong>Amber & Bean</strong>
+          <small>Brewed for every mood</small>
+        </span>
+      </a>
+
+      <div class="nav-links">
+        <span id="tableBadge" class="table-badge" hidden></span>
+        <a href="#menu">Menu</a>
+        <a href="#play">Play With Us</a>
+        <a href="#order">Order</a>
+        <a href="cashier.html">Cashier</a>
+        <a href="qr-sheet.html">QR Sheet</a>
+        <button class="theme-toggle" id="themeToggle">🌙 Dark</button>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+    <section class="section">
+      <div class="container hero-grid">
+        <div>
+          <p class="eyebrow">Premium Café Experience</p>
+          <h1>Brewed for every mood.</h1>
+          <p class="hero-text">
+            Browse the menu, play with the drink matcher, and send orders directly to the café cashier system.
+          </p>
+          <div class="hero-actions">
+            <a href="#menu" class="btn btn-primary">View Menu</a>
+            <button class="btn btn-secondary" id="openQuizHero">Play With Us</button>
+          </div>
+        </div>
+        <div class="hero-card">
+          <div>
+            <h3>Signature Pour</h3>
+            <p>Warm, premium, stylish, and built for dine-in QR ordering.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="menu">
+      <div class="container">
+        <div class="section-heading">
+          <p class="eyebrow">Menu</p>
+          <h2>Customer favorites</h2>
+          <p>Send drinks directly to cashier. If opened from a QR code, the table number is attached automatically.</p>
+        </div>
+        <div class="menu-grid" id="menuGrid"></div>
+      </div>
+    </section>
+
+    <section class="section" id="play">
+      <div class="container">
+        <div class="play-banner">
+          <p class="eyebrow">Play With Us</p>
+          <h2>Not sure what to order?</h2>
+          <p>Answer a few quick questions and get a personalized drink recommendation.</p>
+          <div class="hero-actions">
+            <button class="btn btn-primary" id="openQuizSection">Start Quiz</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="order">
+      <div class="container quick-order-wrap">
+        <div class="quick-order-card">
+          <p class="eyebrow">Send to Cashier</p>
+          <h2>Quick order</h2>
+          <form class="quick-order-form" id="cashierForm">
+            <input id="customerName" type="text" placeholder="Customer name" />
+            <select id="drinkSelect">
+              <option value="">Choose a drink</option>
+            </select>
+            <input id="pickupSpot" type="text" placeholder="Optional pickup detail or short note" />
+            <textarea id="orderNote" placeholder="Customization note"></textarea>
+            <button class="btn btn-primary" id="sendOrderBtn" type="submit">Send to Cashier</button>
+            <p class="status-text" id="orderStatus"></p>
+          </form>
+        </div>
+
+        <div class="quick-order-card">
+          <p class="eyebrow">Live staff tools</p>
+          <h2>Open support pages</h2>
+          <div class="hero-actions">
+            <a class="btn btn-secondary" href="cashier.html" target="_blank">Open Cashier Dashboard</a>
+            <a class="btn btn-secondary" href="qr-sheet.html" target="_blank">Open QR Sheet Generator</a>
+          </div>
+          <p class="status-text">Tip: open this site with <strong>?table=T1</strong> style URLs for dine-in ordering.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div class="modal-overlay" id="quizModal" aria-hidden="true">
+    <div class="modal">
+      <button class="modal-close" id="closeQuiz">×</button>
+
+      <section class="quiz-screen active" id="quizIntro">
+        <p class="eyebrow">Play With Us</p>
+        <h2>Let’s find your perfect sip.</h2>
+        <p class="hero-text">A few quick questions and we’ll match your mood to a drink.</p>
+        <div class="quiz-actions">
+          <button class="btn btn-primary" id="startQuiz">Start Quiz</button>
+        </div>
+      </section>
+
+      <section class="quiz-screen" id="quizQuestion">
+        <p class="eyebrow" id="quizStep">Step 1</p>
+        <h3 id="questionTitle"></h3>
+        <div class="options-grid" id="optionsGrid"></div>
+        <p class="status-text" id="validationMessage"></p>
+        <div class="quiz-actions">
+          <button class="btn btn-secondary" id="backBtn">Back</button>
+          <button class="btn btn-primary" id="nextBtn">Next</button>
+        </div>
+      </section>
+
+      <section class="quiz-screen" id="quizResult">
+        <div class="quiz-result">
+          <img id="resultImage" src="" alt="Recommended drink" />
+          <p class="eyebrow">Your Match</p>
+          <h3 id="resultName"></h3>
+          <p class="result-text" id="resultDescription"></p>
+          <p><strong id="resultPrice"></strong></p>
+          <p class="result-text" id="resultReason"></p>
+          <div class="quiz-actions">
+            <button class="btn btn-secondary" id="retryBtn">Try Again</button>
+            <button class="btn btn-secondary" id="sendRecommendedBtn">Send to Cashier</button>
+            <button class="btn btn-primary" id="viewMenuBtn">View on Menu</button>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const API_BASE = "https://YOUR-RAILWAY-URL.up.railway.app";
+
+    const drinks = [
+      {
+        id: "drink-espresso",
+        name: "Espresso",
+        description: "Bold and concentrated shot of coffee.",
+        price: "\$3.00",
+        image: "https://images.unsplash.com/photo-1510591509098-f4fdc6d0ff04?auto=format&fit=crop&w=900&q=80",
+        tags: ["Strong", "Classic"],
+        temperature: "Hot",
+        flavor: ["Strong"],
+        caffeine: "Caffeinated",
+        mood: ["Classic", "Energizing"],
+        sweetness: "Low"
+      },
+      {
+        id: "drink-americano",
+        name: "Americano",
+        description: "Espresso with hot water, smooth and rich.",
+        price: "\$3.50",
+        image: "https://images.unsplash.com/photo-1497935586351-b67a49e012bf?auto=format&fit=crop&w=900&q=80",
+        tags: ["Popular", "Classic"],
+        temperature: "Hot",
+        flavor: ["Strong"],
+        caffeine: "Caffeinated",
+        mood: ["Classic", "Energizing"],
+        sweetness: "Low"
+      },
+      {
+        id: "drink-cappuccino",
+        name: "Cappuccino",
+        description: "Espresso with steamed milk and foam.",
+        price: "\$4.50",
+        image: "https://images.unsplash.com/photo-1534778101976-62847782c213?auto=format&fit=crop&w=900&q=80",
+        tags: ["Creamy"],
+        temperature: "Hot",
+        flavor: ["Creamy", "Strong"],
+        caffeine: "Caffeinated",
+        mood: ["Classic", "Comforting"],
+        sweetness: "Low"
+      },
+      {
+        id: "drink-latte",
+        name: "Latte",
+        description: "Smooth espresso with creamy steamed milk.",
+        price: "\$4.80",
+        image: "https://images.unsplash.com/photo-1561047029-3000c68339ca?auto=format&fit=crop&w=900&q=80",
+        tags: ["Popular", "Creamy"],
+        temperature: "Hot",
+        flavor: ["Creamy"],
+        caffeine: "Caffeinated",
+        mood: ["Classic", "Comforting"],
+        sweetness: "Medium"
+      },
+      {
+        id: "drink-mocha",
+        name: "Mocha",
+        description: "Chocolate-infused espresso with milk.",
+        price: "\$5.20",
+        image: "https://images.unsplash.com/photo-1541167760496-1628856ab772?auto=format&fit=crop&w=900&q=80",
+        tags: ["Sweet", "Comforting"],
+        temperature: "Hot",
+        flavor: ["Sweet", "Creamy"],
+        caffeine: "Caffeinated",
+        mood: ["Comforting", "Adventurous"],
+        sweetness: "High"
+      },
+      {
+        id: "drink-matcha-latte",
+        name: "Matcha Latte",
+        description: "Earthy green tea with creamy milk.",
+        price: "\$5.30",
+        image: "https://images.unsplash.com/photo-1515823064-d6e0c04616a7?auto=format&fit=crop&w=900&q=80",
+        tags: ["New", "Vegan Available"],
+        temperature: "Hot",
+        flavor: ["Creamy"],
+        caffeine: "Caffeinated",
+        mood: ["Adventurous", "Comforting"],
+        sweetness: "Medium"
+      },
+      {
+        id: "drink-chai-latte",
+        name: "Chai Latte",
+        description: "Spiced tea with steamed milk.",
+        price: "\$4.90",
+        image: "https://images.unsplash.com/photo-1576092768241-dec231879fc3?auto=format&fit=crop&w=900&q=80",
+        tags: ["Adventurous", "Creamy"],
+        temperature: "Hot",
+        flavor: ["Creamy", "Sweet"],
+        caffeine: "Caffeinated",
+        mood: ["Adventurous", "Comforting"],
+        sweetness: "Medium"
+      },
+      {
+        id: "drink-iced-coffee",
+        name: "Iced Coffee",
+        description: "Chilled brewed coffee over ice.",
+        price: "\$4.20",
+        image: "https://images.unsplash.com/photo-1517701604599-bb29b565090c?auto=format&fit=crop&w=900&q=80",
+        tags: ["Energizing"],
+        temperature: "Cold",
+        flavor: ["Strong", "Refreshing"],
+        caffeine: "Caffeinated",
+        mood: ["Classic", "Energizing"],
+        sweetness: "Low"
+      },
+      {
+        id: "drink-cold-brew",
+        name: "Cold Brew",
+        description: "Slow-steeped bold cold coffee.",
+        price: "\$4.80",
+        image: "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=900&q=80",
+        tags: ["Strong", "Popular"],
+        temperature: "Cold",
+        flavor: ["Strong", "Refreshing"],
+        caffeine: "Caffeinated",
+        mood: ["Classic", "Energizing"],
+        sweetness: "Low"
+      },
+      {
+        id: "drink-iced-vanilla-latte",
+        name: "Iced Vanilla Latte",
+        description: "Creamy iced espresso with vanilla.",
+        price: "\$5.40",
+        image: "https://images.unsplash.com/photo-1517701604599-bb29b565090c?auto=format&fit=crop&w=900&q=80",
+        tags: ["Popular", "Sweet"],
+        temperature: "Cold",
+        flavor: ["Sweet", "Creamy"],
+        caffeine: "Caffeinated",
+        mood: ["Classic", "Comforting"],
+        sweetness: "High"
+      },
+      {
+        id: "drink-lemon-iced-tea",
+        name: "Lemon Iced Tea",
+        description: "Light and refreshing citrus tea.",
+        price: "\$4.30",
+        image: "https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?auto=format&fit=crop&w=900&q=80",
+        tags: ["Refreshing", "Seasonal"],
+        temperature: "Cold",
+        flavor: ["Refreshing"],
+        caffeine: "Caffeinated",
+        mood: ["Adventurous", "Energizing"],
+        sweetness: "Medium"
+      },
+      {
+        id: "drink-herbal-tea",
+        name: "Herbal Tea",
+        description: "Caffeine-free calming blend.",
+        price: "\$3.80",
+        image: "https://images.unsplash.com/photo-1594631661960-7f6dbaa0e0c6?auto=format&fit=crop&w=900&q=80",
+        tags: ["Decaf Option", "Refreshing"],
+        temperature: "Hot",
+        flavor: ["Refreshing"],
+        caffeine: "No caffeine",
+        mood: ["Comforting", "Classic"],
+        sweetness: "Low"
+      },
+      {
+        id: "drink-hot-chocolate",
+        name: "Hot Chocolate",
+        description: "Rich cocoa drink with velvety warmth.",
+        price: "\$4.70",
+        image: "https://images.unsplash.com/photo-1517578239113-b03992dcdd25?auto=format&fit=crop&w=900&q=80",
+        tags: ["Sweet", "Comforting"],
+        temperature: "Hot",
+        flavor: ["Sweet", "Creamy"],
+        caffeine: "No caffeine",
+        mood: ["Comforting"],
+        sweetness: "High"
+      },
+      {
+        id: "drink-caramel-frappe",
+        name: "Caramel Frappé",
+        description: "Blended icy caramel coffee drink.",
+        price: "\$5.90",
+        image: "https://images.unsplash.com/photo-1461023058943-07fcbe16d735?auto=format&fit=crop&w=900&q=80",
+        tags: ["Seasonal", "Sweet"],
+        temperature: "Cold",
+        flavor: ["Sweet", "Creamy"],
+        caffeine: "Caffeinated",
+        mood: ["Adventurous", "Energizing"],
+        sweetness: "High"
+      }
+    ];
+
+    const questions = [
+      { key: "temperature", title: "Hot or cold?", options: ["Hot", "Cold"] },
+      { key: "flavor", title: "Pick a flavor mood", options: ["Sweet", "Strong", "Creamy", "Refreshing"] },
+      { key: "caffeine", title: "Caffeine preference?", options: ["Caffeinated", "No caffeine", "Either"] },
+      { key: "mood", title: "How do you feel?", options: ["Classic", "Adventurous", "Comforting", "Energizing"] },
+      { key: "sweetness", title: "Sweetness level?", options: ["Low", "Medium", "High"] }
+    ];
+
+    const menuGrid = document.getElementById("menuGrid");
+    const drinkSelect = document.getElementById("drinkSelect");
+    const toast = document.getElementById("toast");
+    const orderStatus = document.getElementById("orderStatus");
+    const customerName = document.getElementById("customerName");
+    const pickupSpot = document.getElementById("pickupSpot");
+    const orderNote = document.getElementById("orderNote");
+    const tableBadge = document.getElementById("tableBadge");
+    const themeToggle = document.getElementById("themeToggle");
+
+    const quizModal = document.getElementById("quizModal");
+    const quizIntro = document.getElementById("quizIntro");
+    const quizQuestion = document.getElementById("quizQuestion");
+    const quizResult = document.getElementById("quizResult");
+    const questionTitle = document.getElementById("questionTitle");
+    const optionsGrid = document.getElementById("optionsGrid");
+    const validationMessage = document.getElementById("validationMessage");
+    const resultImage = document.getElementById("resultImage");
+    const resultName = document.getElementById("resultName");
+    const resultDescription = document.getElementById("resultDescription");
+    const resultPrice = document.getElementById("resultPrice");
+    const resultReason = document.getElementById("resultReason");
+    const quizStep = document.getElementById("quizStep");
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const activeTableId = urlParams.get("table") || "Pickup";
+
+    let currentQuestionIndex = -1;
+    let answers = {};
+    let lastRecommendation = null;
+
+    function showToast(message) {
+      toast.textContent = message;
+      toast.classList.add("show");
+      clearTimeout(showToast.timeout);
+      showToast.timeout = setTimeout(() => {
+        toast.classList.remove("show");
+      }, 2500);
+    }
+
+    if (activeTableId !== "Pickup") {
+      tableBadge.hidden = false;
+      tableBadge.textContent = `Table: ${activeTableId}`;
+    }
+
+    const savedTheme = localStorage.getItem("amberBeanTheme");
+    if (savedTheme === "dark") {
+      document.body.classList.add("dark-theme");
+      themeToggle.textContent = "☀️ Light";
+    }
+
+    themeToggle.addEventListener("click", () => {
+      document.body.classList.toggle("dark-theme");
+      const dark = document.body.classList.contains("dark-theme");
+      localStorage.setItem("amberBeanTheme", dark ? "dark" : "light");
+      themeToggle.textContent = dark ? "☀️ Light" : "🌙 Dark";
+    });
+
+    function renderMenu() {
+      drinks.forEach(drink => {
+        const article = document.createElement("article");
+        article.className = "menu-card";
+        article.id = drink.id;
+
+        article.innerHTML = `
+          <div class="menu-layout">
+            <img src="${drink.image}" alt="${drink.name}" />
+            <div class="menu-content">
+              <div class="menu-top">
+                <h4>${drink.name}</h4>
+                <span class="price">${drink.price}</span>
+              </div>
+              <p>${drink.description}</p>
+              <div class="tags">
+                ${drink.tags.map(tag => `<span>${tag}</span>`).join("")}
+              </div>
+              <div class="card-actions">
+                <button class="btn btn-secondary quick-send-btn" data-drink="${drink.name}">Send to Cashier</button>
+              </div>
+            </div>
+          </div>
+        `;
+        menuGrid.appendChild(article);
+
+        const option = document.createElement("option");
+        option.value = drink.name;
+        option.textContent = drink.name;
+        drinkSelect.appendChild(option);
+      });
+
+      document.querySelectorAll(".quick-send-btn").forEach(btn => {
+        btn.addEventListener("click", () => handleQuickSend(btn.dataset.drink, "menu-card"));
+      });
+    }
+
+    async function sendOrderToCashier(orderData) {
+      const response = await fetch(`${API_BASE}/api/orders`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(orderData)
+      });
+
+      const result = await response.json();
+
+      if (!response.ok || !result.success) {
+        throw new Error(result.message || "Failed to send order to cashier.");
+      }
+
+      return result.order;
+    }
+
+    async function handleQuickSend(drinkName, source = "menu-card") {
+      try {
+        const payload = {
+          customerName: customerName.value.trim() || "Guest",
+          drink: drinkName,
+          tableId: activeTableId,
+          note: orderNote.value.trim() || pickupSpot.value.trim() || "",
+          source,
+          recommendedByQuiz: source === "quiz-recommendation"
+        };
+
+        showToast("Sending order to cashier...");
+        const result = await sendOrderToCashier(payload);
+        showToast(`Sent: ${drinkName}`);
+        orderStatus.textContent = `Sent successfully • Ticket: ${result.cashierTicketId} • Table: ${result.tableId}`;
+      } catch (error) {
+        console.error(error);
+        orderStatus.textContent = "Could not send order.";
+        showToast("Could not send order");
+      }
+    }
+
+    document.getElementById("cashierForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const selectedDrink = drinkSelect.value;
+      if (!selectedDrink) {
+        orderStatus.textContent = "Please choose a drink.";
+        return;
+      }
+      await handleQuickSend(selectedDrink, "cashier-form");
+    });
+
+    function openQuiz() {
+      quizModal.classList.add("open");
+      quizModal.setAttribute("aria-hidden", "false");
+      resetQuiz();
+    }
+
+    function closeQuiz() {
+      quizModal.classList.remove("open");
+      quizModal.setAttribute("aria-hidden", "true");
+    }
+
+    function showQuizScreen(screen) {
+      [quizIntro, quizQuestion, quizResult].forEach(el => el.classList.remove("active"));
+      screen.classList.add("active");
+    }
+
+    function resetQuiz() {
+      currentQuestionIndex = -1;
+      answers = {};
+      lastRecommendation = null;
+      validationMessage.textContent = "";
+      showQuizScreen(quizIntro);
+    }
+
+    function renderQuestion() {
+      const q = questions[currentQuestionIndex];
+      quizStep.textContent = `Step ${currentQuestionIndex + 1} of ${questions.length}`;
+      questionTitle.textContent = q.title;
+      optionsGrid.innerHTML = "";
+      validationMessage.textContent = "";
+
+      q.options.forEach(option => {
+        const btn = document.createElement("button");
+        btn.className = "option-btn";
+        btn.type = "button";
+        btn.textContent = option;
+        if (answers[q.key] === option) btn.classList.add("selected");
+
+        btn.addEventListener("click", () => {
+          answers[q.key] = option;
+          document.querySelectorAll(".option-btn").forEach(b => b.classList.remove("selected"));
+          btn.classList.add("selected");
+        });
+
+        optionsGrid.appendChild(btn);
+      });
+
+      showQuizScreen(quizQuestion);
+    }
+
+    function scoreDrink(drink, userAnswers) {
+      let score = 0;
+      if (drink.temperature === userAnswers.temperature) score += 3;
+      if (drink.flavor.includes(userAnswers.flavor)) score += 3;
+      if (userAnswers.caffeine === "Either") score += 1;
+      else if (drink.caffeine === userAnswers.caffeine) score += 2;
+      if (drink.mood.includes(userAnswers.mood)) score += 2;
+      if (drink.sweetness === userAnswers.sweetness) score += 2;
+      return score;
+    }
+
+    function getRecommendation(userAnswers) {
+      let best = null;
+      let bestScore = -1;
+
+      drinks.forEach(drink => {
+        const score = scoreDrink(drink, userAnswers);
+        if (score > bestScore) {
+          best = drink;
+          bestScore = score;
+        }
+      });
+
+      return best;
+    }
+
+    function showResult() {
+      const recommendation = getRecommendation(answers);
+      lastRecommendation = recommendation;
+
+      resultImage.src = recommendation.image;
+      resultName.textContent = recommendation.name;
+      resultDescription.textContent = recommendation.description;
+      resultPrice.textContent = recommendation.price;
+      resultReason.textContent =
+        `Because you wanted something ${answers.temperature.toLowerCase()}, ${answers.flavor.toLowerCase()}, and matched a ${answers.mood.toLowerCase()} mood.`;
+
+      showQuizScreen(quizResult);
+    }
+
+    document.getElementById("openQuizHero").addEventListener("click", openQuiz);
+    document.getElementById("openQuizSection").addEventListener("click", openQuiz);
+    document.getElementById("closeQuiz").addEventListener("click", closeQuiz);
+
+    quizModal.addEventListener("click", e => {
+      if (e.target === quizModal) closeQuiz();
+    });
+
+    document.getElementById("startQuiz").addEventListener("click", () => {
+      currentQuestionIndex = 0;
+      renderQuestion();
+    });
+
+    document.getElementById("nextBtn").addEventListener("click", () => {
+      const current = questions[currentQuestionIndex];
+      if (!answers[current.key]) {
+        validationMessage.textContent = "Please select an answer.";
+        return;
+      }
+
+      if (currentQuestionIndex < questions.length - 1) {
+        currentQuestionIndex++;
+        renderQuestion();
+      } else {
+        showResult();
+      }
+    });
+
+    document.getElementById("backBtn").addEventListener("click", () => {
+      if (currentQuestionIndex > 0) {
+        currentQuestionIndex--;
+        renderQuestion();
+      } else {
+        showQuizScreen(quizIntro);
+      }
+    });
+
+    document.getElementById("retryBtn").addEventListener("click", resetQuiz);
+
+    document.getElementById("sendRecommendedBtn").addEventListener("click", async () => {
+      if (!lastRecommendation) return;
+      await handleQuickSend(lastRecommendation.name, "quiz-recommendation");
+    });
+
+    document.getElementById("viewMenuBtn").addEventListener("click", () => {
+      if (!lastRecommendation) return;
+      closeQuiz();
+      document.getElementById(lastRecommendation.id)?.scrollIntoView({ behavior: "smooth", block: "center" });
+    });
+
+    renderMenu();
+  </script>
+</body>
+</html>
