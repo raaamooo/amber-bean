@@ -170,7 +170,7 @@
       margin: 0 0 1rem;
     }
 
-    .hero-text, .section-heading p, .menu-card p, .play-banner p, .status-text, .result-text {
+    .hero-text, .section-heading p, .menu-card p, .play-banner p, .status-text, .result-text, .quiz-helper {
       color: var(--text-soft);
       line-height: 1.75;
     }
@@ -350,6 +350,21 @@
     .quiz-screen { display: none; }
     .quiz-screen.active { display: block; }
 
+    .quiz-progress {
+      height: 8px;
+      border-radius: 999px;
+      background: var(--surface-2);
+      margin: 1rem 0 1.2rem;
+      overflow: hidden;
+    }
+
+    .quiz-progress-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--accent), var(--primary));
+      transition: width 0.25s ease;
+    }
+
     .options-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
@@ -358,7 +373,7 @@
     }
 
     .option-btn {
-      min-height: 64px;
+      min-height: 72px;
       border-radius: 16px;
       border: 1px solid var(--line);
       background: var(--surface);
@@ -366,6 +381,13 @@
       padding: 1rem;
       text-align: left;
       font-weight: 700;
+      transition: transform 0.18s ease, background 0.18s ease, border-color 0.18s ease;
+    }
+
+    .option-btn:hover {
+      transform: translateY(-1px);
+      border-color: var(--accent);
+      background: rgba(197, 139, 90, 0.08);
     }
 
     .option-btn.selected {
@@ -487,7 +509,8 @@
       .menu-card p,
       .play-banner p,
       .status-text,
-      .result-text {
+      .result-text,
+      .quiz-helper {
         font-size: 0.96rem;
         line-height: 1.65;
       }
@@ -614,7 +637,7 @@
         <div class="play-banner">
           <p class="eyebrow">Play With Us</p>
           <h2>Not sure what to order?</h2>
-          <p>Answer a few quick questions and get a personalized drink recommendation.</p>
+          <p>Tap through a few quick options and get a personalized drink recommendation instantly.</p>
           <div class="hero-actions">
             <button class="btn btn-primary" id="openQuizSection">Start Quiz</button>
           </div>
@@ -657,7 +680,7 @@
       <section class="quiz-screen active" id="quizIntro">
         <p class="eyebrow">Play With Us</p>
         <h2>Let’s find your perfect sip.</h2>
-        <p class="hero-text">A few quick questions and we’ll match your mood to a drink.</p>
+        <p class="quiz-helper">Choose an answer and we’ll automatically take you to the next question.</p>
         <div class="quiz-actions">
           <button class="btn btn-primary" id="startQuiz">Start Quiz</button>
         </div>
@@ -665,13 +688,13 @@
 
       <section class="quiz-screen" id="quizQuestion">
         <p class="eyebrow" id="quizStep">Step 1</p>
+        <div class="quiz-progress">
+          <div class="quiz-progress-bar" id="quizProgressBar"></div>
+        </div>
         <h3 id="questionTitle"></h3>
+        <p class="quiz-helper">Just tap one option below.</p>
         <div class="options-grid" id="optionsGrid"></div>
         <p class="status-text" id="validationMessage"></p>
-        <div class="quiz-actions">
-          <button class="btn btn-secondary" id="backBtn">Back</button>
-          <button class="btn btn-primary" id="nextBtn">Next</button>
-        </div>
       </section>
 
       <section class="quiz-screen" id="quizResult">
@@ -913,6 +936,7 @@
     const resultPrice = document.getElementById("resultPrice");
     const resultReason = document.getElementById("resultReason");
     const quizStep = document.getElementById("quizStep");
+    const quizProgressBar = document.getElementById("quizProgressBar");
 
     const urlParams = new URLSearchParams(window.location.search);
     const activeTableId = urlParams.get("table") || "Pickup";
@@ -1021,12 +1045,8 @@
           recommendedByQuiz: source === "quiz-recommendation"
         };
 
-        console.log("Sending payload:", payload);
-
         showToast("Sending order to cashier...");
         const result = await sendOrderToCashier(payload);
-
-        console.log("Order success:", result);
         showToast(`Sent: ${drinkName}`);
         orderStatus.textContent = `Sent successfully • Ticket: ${result.cashierTicketId} • Table: ${result.tableId}`;
       } catch (error) {
@@ -1067,12 +1087,19 @@
       answers = {};
       lastRecommendation = null;
       validationMessage.textContent = "";
+      quizProgressBar.style.width = "0%";
       showQuizScreen(quizIntro);
+    }
+
+    function updateProgress() {
+      const percent = ((currentQuestionIndex + 1) / questions.length) * 100;
+      quizProgressBar.style.width = `${percent}%`;
+      quizStep.textContent = `Step ${currentQuestionIndex + 1} of ${questions.length}`;
     }
 
     function renderQuestion() {
       const q = questions[currentQuestionIndex];
-      quizStep.textContent = `Step ${currentQuestionIndex + 1} of ${questions.length}`;
+      updateProgress();
       questionTitle.textContent = q.title;
       optionsGrid.innerHTML = "";
       validationMessage.textContent = "";
@@ -1082,12 +1109,21 @@
         btn.className = "option-btn";
         btn.type = "button";
         btn.textContent = option;
+
         if (answers[q.key] === option) btn.classList.add("selected");
 
         btn.addEventListener("click", () => {
           answers[q.key] = option;
-          document.querySelectorAll(".option-btn").forEach(b => b.classList.remove("selected"));
           btn.classList.add("selected");
+
+          setTimeout(() => {
+            if (currentQuestionIndex < questions.length - 1) {
+              currentQuestionIndex++;
+              renderQuestion();
+            } else {
+              showResult();
+            }
+          }, 180);
         });
 
         optionsGrid.appendChild(btn);
@@ -1133,6 +1169,7 @@
       resultReason.textContent =
         `Because you wanted something ${answers.temperature.toLowerCase()}, ${answers.flavor.toLowerCase()}, and matched a ${answers.mood.toLowerCase()} mood.`;
 
+      quizProgressBar.style.width = "100%";
       showQuizScreen(quizResult);
     }
 
@@ -1147,30 +1184,6 @@
     document.getElementById("startQuiz").addEventListener("click", () => {
       currentQuestionIndex = 0;
       renderQuestion();
-    });
-
-    document.getElementById("nextBtn").addEventListener("click", () => {
-      const current = questions[currentQuestionIndex];
-      if (!answers[current.key]) {
-        validationMessage.textContent = "Please select an answer.";
-        return;
-      }
-
-      if (currentQuestionIndex < questions.length - 1) {
-        currentQuestionIndex++;
-        renderQuestion();
-      } else {
-        showResult();
-      }
-    });
-
-    document.getElementById("backBtn").addEventListener("click", () => {
-      if (currentQuestionIndex > 0) {
-        currentQuestionIndex--;
-        renderQuestion();
-      } else {
-        showQuizScreen(quizIntro);
-      }
     });
 
     document.getElementById("retryBtn").addEventListener("click", resetQuiz);
