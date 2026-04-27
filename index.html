@@ -418,6 +418,139 @@
       .menu-layout {
         grid-template-columns: 1fr;
       }
+
+      .menu-layout img {
+        min-height: 220px;
+        max-height: 220px;
+      }
+
+      .navbar {
+        align-items: flex-start;
+      }
+
+      .nav-links {
+        width: 100%;
+        justify-content: flex-start;
+      }
+
+      .hero-card {
+        min-height: 280px;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .section {
+        padding: 3.5rem 0;
+      }
+
+      .container {
+        width: min(100% - 1rem, 1180px);
+      }
+
+      .navbar {
+        padding: 0.5rem 0;
+      }
+
+      .brand {
+        width: 100%;
+      }
+
+      .nav-links {
+        width: 100%;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.6rem;
+      }
+
+      .table-badge,
+      .btn,
+      .theme-toggle {
+        min-height: 42px;
+        padding: 0.7rem 0.95rem;
+        font-size: 0.95rem;
+      }
+
+      h1 {
+        font-size: 2.4rem;
+      }
+
+      .section-heading h2,
+      .play-banner h2,
+      .quick-order-card h2,
+      .modal h2 {
+        font-size: 1.9rem;
+        line-height: 1.15;
+      }
+
+      .hero-text,
+      .section-heading p,
+      .menu-card p,
+      .play-banner p,
+      .status-text,
+      .result-text {
+        font-size: 0.96rem;
+        line-height: 1.65;
+      }
+
+      .hero-actions,
+      .card-actions,
+      .quiz-actions {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .hero-actions .btn,
+      .card-actions .btn,
+      .quiz-actions .btn {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .menu-card {
+        border-radius: 18px;
+      }
+
+      .menu-layout img {
+        min-height: 200px;
+        max-height: 200px;
+      }
+
+      .menu-content {
+        padding: 0.95rem;
+      }
+
+      .menu-top {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.35rem;
+      }
+
+      .tags {
+        gap: 0.4rem;
+      }
+
+      .tags span {
+        font-size: 0.74rem;
+      }
+
+      .play-banner,
+      .quick-order-card,
+      .modal {
+        padding: 1.1rem;
+      }
+
+      .options-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .modal {
+        width: min(100%, 100%);
+      }
+
+      .modal-close {
+        top: 0.75rem;
+        right: 0.75rem;
+      }
     }
   </style>
 </head>
@@ -437,8 +570,6 @@
         <a href="#menu">Menu</a>
         <a href="#play">Play With Us</a>
         <a href="#order">Order</a>
-        <a href="cashier.html">Cashier</a>
-        <a href="qr-sheet.html">QR Sheet</a>
         <button class="theme-toggle" id="themeToggle">🌙 Dark</button>
       </div>
     </nav>
@@ -509,13 +640,11 @@
         </div>
 
         <div class="quick-order-card">
-          <p class="eyebrow">Live staff tools</p>
-          <h2>Open support pages</h2>
-          <div class="hero-actions">
-            <a class="btn btn-secondary" href="cashier.html" target="_blank">Open Cashier Dashboard</a>
-            <a class="btn btn-secondary" href="qr-sheet.html" target="_blank">Open QR Sheet Generator</a>
-          </div>
-          <p class="status-text">Tip: open this site with <strong>?table=T1</strong> style URLs for dine-in ordering.</p>
+          <p class="eyebrow">Dine-In Ordering</p>
+          <h2>Simple table ordering</h2>
+          <p class="status-text">
+            Customers can scan a table QR code and order directly from their phone. Their table number is attached automatically.
+          </p>
         </div>
       </div>
     </section>
@@ -566,7 +695,8 @@
   <div class="toast" id="toast"></div>
 
   <script>
-const API_BASE = "https://amber-bean-api-production.up.railway.app";
+    const API_BASE = "https://amber-bean-api-production.up.railway.app";
+
     const drinks = [
       {
         id: "drink-espresso",
@@ -864,10 +994,17 @@ const API_BASE = "https://amber-bean-api-production.up.railway.app";
         body: JSON.stringify(orderData)
       });
 
-      const result = await response.json();
+      const text = await response.text();
+
+      let result;
+      try {
+        result = JSON.parse(text);
+      } catch (e) {
+        throw new Error(`Server returned non-JSON response: ${text.slice(0, 120)}`);
+      }
 
       if (!response.ok || !result.success) {
-        throw new Error(result.message || "Failed to send order to cashier.");
+        throw new Error(result.message || `Request failed with status ${response.status}`);
       }
 
       return result.order;
@@ -884,13 +1021,17 @@ const API_BASE = "https://amber-bean-api-production.up.railway.app";
           recommendedByQuiz: source === "quiz-recommendation"
         };
 
+        console.log("Sending payload:", payload);
+
         showToast("Sending order to cashier...");
         const result = await sendOrderToCashier(payload);
+
+        console.log("Order success:", result);
         showToast(`Sent: ${drinkName}`);
         orderStatus.textContent = `Sent successfully • Ticket: ${result.cashierTicketId} • Table: ${result.tableId}`;
       } catch (error) {
-        console.error(error);
-        orderStatus.textContent = "Could not send order.";
+        console.error("Order send failed:", error);
+        orderStatus.textContent = `Could not send order: ${error.message}`;
         showToast("Could not send order");
       }
     }
