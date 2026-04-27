@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -292,7 +291,7 @@
 
     .quick-order-wrap {
       display: grid;
-      grid-template-columns: 1.1fr 0.9fr;
+      grid-template-columns: 1fr;
       gap: 1.25rem;
     }
 
@@ -726,7 +725,7 @@
 
           <div class="order-total">
             <span>Total</span>
-            <strong id="orderTotal">$0.00</strong>
+            <strong id="orderTotal">\$0.00</strong>
           </div>
 
           <form class="quick-order-form" id="cashierForm">
@@ -756,14 +755,6 @@
             <button class="btn btn-primary" id="sendOrderBtn" type="submit">Send to Cashier</button>
             <p class="status-text" id="orderStatus"></p>
           </form>
-        </div>
-
-        <div class="quick-order-card">
-          <p class="eyebrow">Dine-In Ordering</p>
-          <h2>Simple table ordering</h2>
-          <p class="status-text">
-            Customers can scan a table QR code and order directly from their phone. Their table number is attached automatically.
-          </p>
         </div>
       </div>
     </section>
@@ -822,7 +813,7 @@
         name: "Espresso",
         description: "Bold and concentrated shot of coffee.",
         price: 3.00,
-        displayPrice: "$3.00",
+        displayPrice: "\$3.00",
         image: "https://images.unsplash.com/photo-1510591509098-f4fdc6d0ff04?auto=format&fit=crop&w=900&q=80",
         tags: ["Strong", "Classic"],
         temperature: "Hot",
@@ -836,7 +827,7 @@
         name: "Americano",
         description: "Espresso with hot water, smooth and rich.",
         price: 3.50,
-        displayPrice: "$3.50",
+        displayPrice: "\$3.50",
         image: "https://images.unsplash.com/photo-1497935586351-b67a49e012bf?auto=format&fit=crop&w=900&q=80",
         tags: ["Popular", "Classic"],
         temperature: "Hot",
@@ -850,7 +841,7 @@
         name: "Cappuccino",
         description: "Espresso with steamed milk and foam.",
         price: 4.50,
-        displayPrice: "$4.50",
+        displayPrice: "\$4.50",
         image: "https://images.unsplash.com/photo-1534778101976-62847782c213?auto=format&fit=crop&w=900&q=80",
         tags: ["Creamy"],
         temperature: "Hot",
@@ -864,7 +855,7 @@
         name: "Latte",
         description: "Smooth espresso with creamy steamed milk.",
         price: 4.80,
-        displayPrice: "$4.80",
+        displayPrice: "\$4.80",
         image: "https://images.unsplash.com/photo-1561047029-3000c68339ca?auto=format&fit=crop&w=900&q=80",
         tags: ["Popular", "Creamy"],
         temperature: "Hot",
@@ -878,7 +869,7 @@
         name: "Mocha",
         description: "Chocolate-infused espresso with milk.",
         price: 5.20,
-        displayPrice: "$5.20",
+        displayPrice: "\$5.20",
         image: "https://images.unsplash.com/photo-1541167760496-1628856ab772?auto=format&fit=crop&w=900&q=80",
         tags: ["Sweet", "Comforting"],
         temperature: "Hot",
@@ -892,7 +883,7 @@
         name: "Matcha Latte",
         description: "Earthy green tea with creamy milk.",
         price: 5.30,
-        displayPrice: "$5.30",
+        displayPrice: "\$5.30",
         image: "https://images.unsplash.com/photo-1515823064-d6e0c04616a7?auto=format&fit=crop&w=900&q=80",
         tags: ["New", "Vegan Available"],
         temperature: "Hot",
@@ -906,7 +897,7 @@
         name: "Chai Latte",
         description: "Spiced tea with steamed milk.",
         price: 4.90,
-        displayPrice: "$4.90",
+        displayPrice: "\$4.90",
         image: "https://images.unsplash.com/photo-1576092768241-dec231879fc3?auto=format&fit=crop&w=900&q=80",
         tags: ["Adventurous", "Creamy"],
         temperature: "Hot",
@@ -920,7 +911,7 @@
         name: "Iced Coffee",
         description: "Chilled brewed coffee over ice.",
         price: 4.20,
-        displayPrice: "$4.20",
+        displayPrice: "\$4.20",
         image: "https://images.unsplash.com/photo-1517701604599-bb29b565090c?auto=format&fit=crop&w=900&q=80",
         tags: ["Energizing"],
         temperature: "Cold",
@@ -934,7 +925,7 @@
         name: "Cold Brew",
         description: "Slow-steeped bold cold coffee.",
         price: 4.80,
-        displayPrice: "$4.80",
+        displayPrice: "\$4.80",
         image: "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=900&q=80",
         tags: ["Strong", "Popular"],
         temperature: "Cold",
@@ -948,7 +939,7 @@
         name: "Iced Vanilla Latte",
         description: "Creamy iced espresso with vanilla.",
         price: 5.40,
-        displayPrice: "$5.40",
+        displayPrice: "\$5.40",
         image: "https://images.unsplash.com/photo-1517701604599-bb29b565090c?auto=format&fit=crop&w=900&q=80",
         tags: ["Popular", "Sweet"],
         temperature: "Cold",
@@ -962,7 +953,7 @@
         name: "Lemon Iced Tea",
         description: "Light and refreshing citrus tea.",
         price: 4.30,
-        displayPrice: "$4.30",
+        displayPrice: "\$4.30",
         image: "https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?auto=format&fit=crop&w=900&q=80",
         tags: ["Refreshing", "Seasonal"],
         temperature: "Cold",
@@ -976,7 +967,7 @@
         name: "Herbal Tea",
         description: "Caffeine-free calming blend.",
         price: 3.80,
-        displayPrice: "$3.80",
+        displayPrice: "\$3.80",
         image: "https://images.unsplash.com/photo-1594631661960-7f6dbaa0e0c6?auto=format&fit=crop&w=900&q=80",
         tags: ["Decaf Option", "Refreshing"],
         temperature: "Hot",
@@ -990,7 +981,7 @@
         name: "Hot Chocolate",
         description: "Rich cocoa drink with velvety warmth.",
         price: 4.70,
-        displayPrice: "$4.70",
+        displayPrice: "\$4.70",
         image: "https://images.unsplash.com/photo-1517578239113-b03992dcdd25?auto=format&fit=crop&w=900&q=80",
         tags: ["Sweet", "Comforting"],
         temperature: "Hot",
@@ -1004,7 +995,7 @@
         name: "Caramel Frappé",
         description: "Blended icy caramel coffee drink.",
         price: 5.90,
-        displayPrice: "$5.90",
+        displayPrice: "\$5.90",
         image: "https://images.unsplash.com/photo-1461023058943-07fcbe16d735?auto=format&fit=crop&w=900&q=80",
         tags: ["Seasonal", "Sweet"],
         temperature: "Cold",
@@ -1456,4 +1447,3 @@
   </script>
 </body>
 </html>
-```
